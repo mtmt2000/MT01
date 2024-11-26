@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>AGV 監視システム</title>
+    <style>
+        /* 初期セルのスタイル */
+        td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+        /* 変更後のセルのスタイル */
+        .highlight {
+            background-color: #a6ce39; /* 充電中 */
+        }
+        .highlight_1 {
+            background-color: yellow; /* 充電未 */
+        }
+        .highlight_2 {
+            background-color: red; /* 通信未 */
+        }
+        .highlight_3 {
+            background-color: #97cdf3; /* 確立中 */
+        }
+        h1 {
+            font-size: 60px;
+        }
+        th {
+            font-size: 50px;
+        }
+        td {
+            font-size: 35px;
+        }
+        h1 {
+            margin: 0;
+        }
+        table {
+            margin: 0;
+        }
+        /* お知らせ欄のスタイル */
+        .notification-container {
+            display: flex;
+            justify-content: space-between; /* 左右にスペースを分ける */
+            align-items: center; /* 縦方向に中央揃え */
+            margin: 10px 0;
+        }
+        .notification {
+            font-size: 20px;
+            color: red; /* 文字を赤に */
+            background-color: #FFFFFF; /* 背景を白に */
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #cccccc; /* お知らせ欄に薄いグレーの枠を追加 */
+            flex: 1; /* 残りのスペースを使う */
+            margin-right: 10px; /* ボタンとの間隔 */
+        }
+        /* ボタンの共通スタイル */
+        .button-container {
+            display: flex;
+            gap: 10px; /* ボタン間のスペース */
+        }
+        .confirm-button, .other-button {
+            font-size: 20px;
+            padding: 10px 20px;
+            color: white; /* 白い文字 */
+            border: none; /* 枠なし */
+            border-radius: 5px; /* 角を丸く */
+            cursor: pointer;
+        }
+        .confirm-button {
+            background-color: #007BFF; /* 青色の背景 */
+        }
+        .confirm-button:hover {
+            background-color: #0056b3; /* ホバー時の色 */
+        }
+        .other-button {
+            background-color: #28a745; /* 緑色の背景 */
+        }
+        .other-button:hover {
+            background-color: #218838; /* ホバー時の色 */
+        }
+    </style>
+    <meta http-equiv="refresh" content="10">
+</head>
+<body>
+
+    <h1 align="center" style="color:white;background-color:#333333;">AGV 充電状況確認システム</h1>
+    
+    <!-- お知らせ欄とボタンをフレックスボックスで配置 -->
+    <div class="notification-container">
+        <div class="notification">
+            <marquee behavior="scroll" direction="left" scrollamount="10">
+                異常履歴：
+            </marquee>
+        </div>
+
+        <!-- ボタンを並べて配置 -->
+        <div class="button-container">
+            <button class="other-button" id="otherButton">確認</button>
+            <button class="confirm-button" id="confirmButton">異常リセット</button>
+        </div>
+    </div>
+
+    <table id="myTable" border="2" width="100%">
+        <tr>
+            <th class="fixed01" style="background-color:#cccccc;">スポット</th>
+            <th class="fixed01" style="background-color:#cccccc;">号車No</th>
+            <th class="fixed01" style="background-color:#cccccc;">電流値（A）</th>
+            <th class="fixed01" style="background-color:#cccccc;">充電状況</th>
+        </tr>
+        <tr>
+            <td align="center" height="50">カチオン塗装1号</td>
+            <td align="center" height="50">46</td>
+            <td align="center" height="50">10.2</td>
+            <td align="center" height="50">充電中</td>
+        </tr>
+        <tr>
+            <td align="center" height="50">カチオン塗装2号</td>
+            <td align="center" height="50">58</td>
+            <td align="center" height="50">0.00</td>
+            <td align="center" height="50">充電未</td>
+        </tr>
+        <tr>
+            <td align="center" height="50">カチオン塗装3号</td>
+            <td align="center" height="50"></td>
+            <td align="center" height="50">Noデータ</td>
+            <td align="center" height="50">通信未</td>
+        </tr>
+        <tr>
+            <td align="center" height="50">カチオン塗装4号</td>
+            <td align="center" height="50"></td>
+            <td align="center" height="50">Noデータ</td>
+            <td align="center" height="50">確立中</td>
+        </tr>
+        <!-- 以下省略（他の行も同様に追加） -->
+    </table>
+
+<script>
+    // 条件に一致するセルの色を変える関数
+    function highlightCells() {
+        var table = document.getElementById("myTable");
+        var cells = table.getElementsByTagName("td");
+
+        // 各セルを走査して条件に一致する場合、色を変える
+        for (var i = 0; i < cells.length; i++) {
+            var cell = cells[i];
+
+            if (cell.textContent.trim() === "充電中") {
+                cell.classList.add("highlight");
+            } else if (cell.textContent.trim() === "充電未") {
+                cell.classList.add("highlight_1");
+            } else if (cell.textContent.trim() === "通信未") {
+                cell.classList.add("highlight_2");
+            } else if (cell.textContent.trim() === "確立中") {
+                cell.classList.add("highlight_3");
+            }
+        }
+    }
+      
+    // ページが読み込まれた後にセルの色を変える関数を呼び出す
+    window.onload = highlightCells;
+
+    // 確認ボタンのクリックイベント
+    document.getElementById("confirmButton").onclick = function() {
+        // ユーザーに確認ダイアログを表示
+        var isConfirmed = confirm("確認しましたか？");
+
+        // OKを押した場合のみ、Pythonプログラムにメッセージを送信
+        if (isConfirmed) {
+            const message = "お知らせを確認しました。"; // 送信するメッセージ
+            const redirectUrl = 'https://www.yahoo.co.jp/'; // 移動先のURL
+
+            // 確認メッセージをPythonプログラムに送信
+            fetch("/send_message", { // PythonプログラムのエンドポイントにPOSTリクエストを送信
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message }) // 送信するデータ
+            })
+            .then(response => {
+                if (response.ok) {
+                    // リダイレクトする
+                    window.location.href = redirectUrl; // 指定したURLに移動
+                } else {
+                    alert("エラーが発生しました。");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("エラーが発生しました。");
+            });
+        }
+    };
+
+    // 新しいボタンのクリックイベント
+    document.getElementById("otherButton").onclick = function() {
+        alert("他の操作ボタンがクリックされました。");
+    };
+</script>
+
+</body>
+</html>
