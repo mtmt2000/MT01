@@ -231,7 +231,14 @@ iframe {
 /* SNS */
 .sns-item {
     margin-bottom: 2rem;
+    text-align: center; /* 親要素でテキストを中央に */
 }
+
+.sns-icon {
+    display: inline-block; /* aタグがインライン要素として振る舞う */
+    margin: 0 auto; /* 自動マージンでセンター配置 */
+}
+
 .sns-item .heading-medium {
     margin-bottom: .5rem;
 }
